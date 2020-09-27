@@ -5,19 +5,19 @@ input.onButtonPressed(Button.A, function () {
     Lane3 = 0
     Lane4 = 0
     basic.showIcon(IconNames.Square)
-    control.waitMicros(500)
+    basic.pause(200)
     basic.showIcon(IconNames.SmallSquare)
-    control.waitMicros(500)
+    basic.pause(200)
     basic.showIcon(IconNames.SmallDiamond)
-    Finished = 0
 })
-let Finished = 0
 let Lane4 = 0
 let Lane3 = 0
 let Lane2 = 0
 let Lane1 = 0
 let Place = 0
 basic.showIcon(IconNames.No)
+pins.setPull(DigitalPin.P1, PinPullMode.PullNone)
+pins.setPull(DigitalPin.P2, PinPullMode.PullNone)
 basic.forever(function () {
     if (pins.digitalReadPin(DigitalPin.P1) == 1) {
         if (Lane1 == 0) {
