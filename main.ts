@@ -5,9 +5,7 @@ input.onButtonPressed(Button.A, function () {
     Lane3 = 0
     Lane4 = 0
     basic.showIcon(IconNames.Square)
-    basic.pause(200)
     basic.showIcon(IconNames.SmallSquare)
-    basic.pause(200)
     basic.showIcon(IconNames.SmallDiamond)
 })
 let Lane4 = 0
@@ -19,7 +17,7 @@ basic.showIcon(IconNames.No)
 pins.setPull(DigitalPin.P1, PinPullMode.PullNone)
 pins.setPull(DigitalPin.P2, PinPullMode.PullNone)
 basic.forever(function () {
-    if (pins.digitalReadPin(DigitalPin.P1) == 1) {
+    if (pins.digitalReadPin(DigitalPin.P1) == 0) {
         if (Lane1 == 0) {
             basic.showLeds(`
                 . . . . .
@@ -34,7 +32,7 @@ basic.forever(function () {
     }
 })
 basic.forever(function () {
-    if (pins.digitalReadPin(DigitalPin.P2) == 1) {
+    if (pins.digitalReadPin(DigitalPin.P2) == 0) {
         if (Lane2 == 0) {
             basic.showLeds(`
                 . . . . .
@@ -50,8 +48,14 @@ basic.forever(function () {
 })
 basic.forever(function () {
     if (Place == 2) {
-        basic.showIcon(IconNames.Chessboard)
-        control.waitMicros(10000)
+        images.createBigImage(`
+            # . # . # . # . # .
+            . # . # . # . # . #
+            # . # . # . # . # .
+            . # . # . # . # . #
+            # . # . # . # . # .
+            `).scrollImage(1, 50)
+        control.waitMicros(100)
         basic.showLeds(`
             # # # # #
             . . . . .
