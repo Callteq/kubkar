@@ -1,27 +1,37 @@
 def LedDisplay(Lane: number, Position: number):
     global LedPos, range2
-    LedPos = (Lane - 1) * 4
-    range2 = strip.range(LedPos, Position)
     if Position == 1:
-        range2.show_color(neopixel.colors(NeoPixelColors.BLUE))
-    elif Position == 2:
-        range2.show_color(neopixel.colors(NeoPixelColors.RED))
-    elif Position == 3:
-        range2.show_color(neopixel.colors(NeoPixelColors.GREEN))
+        LedPos = (Lane - 1) * 4
+        range2 = strip.range(LedPos, 4)
+        for index in range(20):
+            range2.show_color(neopixel.colors(NeoPixelColors.BLUE))
+            control.wait_micros(100)
+            range2.show_color(neopixel.colors(NeoPixelColors.WHITE))
+            control.wait_micros(100)
+            range2.show_color(neopixel.colors(NeoPixelColors.BLUE))
     else:
-        range2.show_color(neopixel.colors(NeoPixelColors.WHITE))
+        LedPos = (Lane - 1) * 4 + Position
+        range2 = strip.range(LedPos, 1)
+        if Position == 2:
+            range2.show_color(neopixel.colors(NeoPixelColors.RED))
+        elif Position == 3:
+            range2.show_color(neopixel.colors(NeoPixelColors.GREEN))
+        else:
+            range2.show_color(neopixel.colors(NeoPixelColors.WHITE))
     range2.show()
 
 def on_button_pressed_ab():
     global Place, Lane1, Lane2, Lane3, Lane4
-    Place = 0
+    Place = 99
     Lane1 = 0
     Lane2 = 0
     Lane3 = 0
     Lane4 = 0
     basic.show_icon(IconNames.SQUARE)
     basic.show_icon(IconNames.SMALL_SQUARE)
+    Place = 0
     basic.show_icon(IconNames.SMALL_DIAMOND)
+    strip.show_color(neopixel.colors(NeoPixelColors.BLACK))
 input.on_button_pressed(Button.AB, on_button_pressed_ab)
 
 Lane4 = 0
@@ -37,16 +47,12 @@ pins.set_pull(DigitalPin.P1, PinPullMode.PULL_NONE)
 pins.set_pull(DigitalPin.P8, PinPullMode.PULL_NONE)
 pins.set_pull(DigitalPin.P2, PinPullMode.PULL_NONE)
 pins.set_pull(DigitalPin.P16, PinPullMode.PULL_NONE)
-strip = neopixel.create(DigitalPin.P0, 8, NeoPixelMode.RGB)
-L1 = strip.range(0, 3)
-L2 = strip.range(4, 7)
-L3 = strip.range(8, 11)
-L4 = strip.range(12, 15)
-strip.show_color(neopixel.colors(NeoPixelColors.WHITE))
+strip = neopixel.create(DigitalPin.P0, 30, NeoPixelMode.RGB)
+strip.show_color(neopixel.colors(NeoPixelColors.BLACK))
 strip.show()
 
 def on_forever():
-    global Place, Lane2
+    global Place, Lane2, Lane3, Lane4
     if input.button_is_pressed(Button.B):
         if Lane2 == 0:
             basic.show_leds("""
@@ -59,11 +65,17 @@ def on_forever():
             Place += 1
             Lane2 = Place
             LedDisplay(2, Lane2)
+            Place += 1
+            Lane3 = Place
+            LedDisplay(3, Lane3)
+            Place += 1
+            Lane4 = Place
+            LedDisplay(4, Lane4)
 basic.forever(on_forever)
 
 def on_forever2():
     global Place
-    if Place == 2:
+    if Place == 4:
         images.create_big_image("""
             # . # . # . # . # .
             . # . # . # . # . #
@@ -81,6 +93,8 @@ def on_forever2():
             """)
         led.plot(0, Lane1)
         led.plot(1, Lane2)
+        led.plot(3, Lane3)
+        led.plot(4, Lane4)
         Place += 1
 basic.forever(on_forever2)
 
