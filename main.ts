@@ -14,7 +14,9 @@ let Lane2 = 0
 let Lane1 = 0
 let Place = 0
 basic.showIcon(IconNames.No)
+pins.setPull(DigitalPin.P0, PinPullMode.PullNone)
 pins.setPull(DigitalPin.P1, PinPullMode.PullNone)
+pins.setPull(DigitalPin.P8, PinPullMode.PullNone)
 pins.setPull(DigitalPin.P2, PinPullMode.PullNone)
 basic.forever(function () {
     if (pins.digitalReadPin(DigitalPin.P1) == 0) {
