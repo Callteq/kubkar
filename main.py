@@ -1,115 +1,113 @@
-def LedDisplay(Lane: number, Position: number):
-    global LedPos, range2
-    if Position == 1:
-        LedPos = (Lane - 1) * 4
-        range2 = strip.range(LedPos, 4)
-        for index in range(20):
-            range2.show_color(neopixel.colors(NeoPixelColors.BLUE))
-            control.wait_micros(100)
-            range2.show_color(neopixel.colors(NeoPixelColors.WHITE))
-            control.wait_micros(100)
-            range2.show_color(neopixel.colors(NeoPixelColors.BLUE))
-    else:
-        LedPos = (Lane - 1) * 4 + Position
-        range2 = strip.range(LedPos, 1)
-        if Position == 2:
-            range2.show_color(neopixel.colors(NeoPixelColors.RED))
-        elif Position == 3:
-            range2.show_color(neopixel.colors(NeoPixelColors.GREEN))
-        else:
-            range2.show_color(neopixel.colors(NeoPixelColors.WHITE))
-    range2.show()
-
-def on_button_pressed_ab():
-    global Place, Lane1, Lane2, Lane3, Lane4
-    Place = 99
-    Lane1 = 0
-    Lane2 = 0
-    Lane3 = 0
-    Lane4 = 0
-    basic.show_icon(IconNames.SQUARE)
-    basic.show_icon(IconNames.SMALL_SQUARE)
-    Place = 0
-    basic.show_icon(IconNames.SMALL_DIAMOND)
-    strip.show_color(neopixel.colors(NeoPixelColors.BLACK))
-input.on_button_pressed(Button.AB, on_button_pressed_ab)
-
-Lane4 = 0
-Lane3 = 0
-Lane2 = 0
-Lane1 = 0
-Place = 0
-range2: neopixel.Strip = None
-LedPos = 0
-strip: neopixel.Strip = None
-basic.show_icon(IconNames.NO)
-pins.set_pull(DigitalPin.P1, PinPullMode.PULL_NONE)
-pins.set_pull(DigitalPin.P8, PinPullMode.PULL_NONE)
-pins.set_pull(DigitalPin.P2, PinPullMode.PULL_NONE)
-pins.set_pull(DigitalPin.P16, PinPullMode.PULL_NONE)
+function LedDisplay (Lane: number, Position: number, Mode: number) {
+    // indicate which lane
+    led.plot(Lane, 1)
+    LedPos = (Lane - 1) * 4
+    if (Mode == 1) {
+        laneStrip = strip.range(LedPos, 1)
+        laneStrip.showColor(neopixel.colors(NeoPixelColors.Purple))
+    } else {
+        laneStrip = strip.range(LedPos, 4)
+        if (Position == 1) {
+            laneStrip.showColor(neopixel.colors(NeoPixelColors.Blue))
+            winnerStrip = strip.range(LedPos, 4)
+            winnerStrip.showColor(neopixel.colors(NeoPixelColors.Blue))
+            haveWinner = 1
+        } else if (Position == 2) {
+            laneStrip.showColor(neopixel.colors(NeoPixelColors.Red))
+        } else if (Position == 3) {
+            laneStrip.showColor(neopixel.colors(NeoPixelColors.Green))
+        } else {
+            laneStrip.showColor(neopixel.colors(NeoPixelColors.White))
+        }
+    }
+    laneStrip.show()
+}
+// Reset the race
+input.onButtonPressed(Button.A, function () {
+    // initiialise
+    thePlace = 99
+    Lane1Place = 0
+    Lane2Place = 0
+    Lane3Place = 0
+    Lane4Place = 0
+    Diag = 0
+    haveWinner = 0
+    basic.showIcon(IconNames.Square)
+    basic.showIcon(IconNames.SmallSquare)
+    thePlace = 0
+    basic.showIcon(IconNames.SmallDiamond)
+    strip.showColor(neopixel.colors(NeoPixelColors.Black))
+})
+// simulate the cars crossing the finsih line one ach press of Button B
+input.onButtonPressed(Button.B, function () {
+    Diag = Diag + 1
+    if (Diag == 1) {
+        thePlace = thePlace + 1
+        Lane1Place = thePlace
+        LedDisplay(1, Lane1Place, 1)
+    } else if (Diag == 2) {
+        thePlace = thePlace + 1
+        Lane2Place = thePlace
+        LedDisplay(2, Lane2Place, 1)
+    } else if (Diag == 3) {
+        thePlace = thePlace + 1
+        Lane3Place = thePlace
+        LedDisplay(3, Lane3Place, 1)
+    } else if (Diag == 4) {
+        thePlace = thePlace + 1
+        Lane4Place = thePlace
+        LedDisplay(4, Lane4Place, 1)
+    }
+})
+let Diag = 0
+let Lane4Place = 0
+let Lane3Place = 0
+let Lane2Place = 0
+let Lane1Place = 0
+let thePlace = 0
+let winnerStrip: neopixel.Strip = null
+let laneStrip: neopixel.Strip = null
+let LedPos = 0
+let strip: neopixel.Strip = null
+let haveWinner = 0
+haveWinner = 0
+basic.showIcon(IconNames.No)
+pins.setPull(DigitalPin.P1, PinPullMode.PullNone)
+pins.setPull(DigitalPin.P8, PinPullMode.PullNone)
+pins.setPull(DigitalPin.P2, PinPullMode.PullNone)
+pins.setPull(DigitalPin.P16, PinPullMode.PullNone)
 strip = neopixel.create(DigitalPin.P0, 30, NeoPixelMode.RGB)
-strip.show_color(neopixel.colors(NeoPixelColors.BLACK))
+strip.showColor(neopixel.colors(NeoPixelColors.Black))
 strip.show()
-
-def on_forever():
-    global Place, Lane2, Lane3, Lane4
-    if input.button_is_pressed(Button.B):
-        if Lane2 == 0:
-            basic.show_leds("""
-                . . . . .
-                . . . . .
-                . . . . .
-                . . . . .
-                . # . . .
-                """)
-            Place += 1
-            Lane2 = Place
-            LedDisplay(2, Lane2)
-            Place += 1
-            Lane3 = Place
-            LedDisplay(3, Lane3)
-            Place += 1
-            Lane4 = Place
-            LedDisplay(4, Lane4)
-basic.forever(on_forever)
-
-def on_forever2():
-    global Place
-    if Place == 4:
-        images.create_big_image("""
+basic.forever(function () {
+    if (haveWinner == 1) {
+        basic.pause(50)
+        winnerStrip.showColor(neopixel.colors(NeoPixelColors.Red))
+        basic.pause(50)
+    }
+})
+// wait until we have all 4 cars across the finish line
+basic.forever(function () {
+    if (thePlace == 4) {
+        images.createBigImage(`
             # . # . # . # . # .
             . # . # . # . # . #
             # . # . # . # . # .
             . # . # . # . # . #
             # . # . # . # . # .
-            """).scroll_image(1, 50)
-        control.wait_micros(100)
-        basic.show_leds("""
+            `).scrollImage(1, 50)
+        control.waitMicros(100)
+        basic.showLeds(`
             # # # # #
             . . . . .
             . . . . .
             . . . . .
             . . . . .
-            """)
-        led.plot(0, Lane1)
-        led.plot(1, Lane2)
-        led.plot(3, Lane3)
-        led.plot(4, Lane4)
-        Place += 1
-basic.forever(on_forever2)
-
-def on_forever3():
-    global Place, Lane1
-    if input.button_is_pressed(Button.A):
-        if Lane1 == 0:
-            basic.show_leds("""
-                . . . . .
-                . . . . .
-                . . . . .
-                . . . . .
-                # . . . .
-                """)
-            Place += 1
-            Lane1 = Place
-            LedDisplay(1, Lane1)
-basic.forever(on_forever3)
+            `)
+        LedDisplay(1, Lane1Place, 2)
+        LedDisplay(2, Lane2Place, 2)
+        LedDisplay(3, Lane3Place, 2)
+        LedDisplay(4, Lane4Place, 2)
+        thePlace = thePlace + 1
+    }
+})
